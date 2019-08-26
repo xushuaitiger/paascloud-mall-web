@@ -3,7 +3,7 @@
     <div class="w">
       <div class="user-info">
                 <span class="user not-login" v-show="loginName == null || loginName === ''">
-                    <span class="link js-login" @click="goSignIn">登录</span>
+                    <span class="link js-login" @click="goSignIn">登录xx</span>
                     <span class="link js-register" @click="goSignUp">注册</span>
                 </span>
         <span class="user login" v-show="loginName != null && loginName !== ''">
