@@ -124,7 +124,7 @@ Vue.prototype.$http.interceptors.response.use((res) => {
     // window.location.href = '/';
     return Promise.reject(res);
   } else {
-    alert(res.data.message);
+    // alert(res.data.message);
     return Promise.reject(res);
   }
 }, (error) => {
@@ -156,9 +156,9 @@ router.beforeEach((to, from, next) => {
         next();
       } else {
         if (process.env.NODE_ENV === 'production') {
-          window.location.href = 'http://login.paascloud.net/login';
+          window.location.href = 'http://localhost:81/login';
         } else {
-          window.location.href = 'http://dev-login.paascloud.net/login';
+          window.location.href = 'http://localhost:81/login';
         }
       }
     });

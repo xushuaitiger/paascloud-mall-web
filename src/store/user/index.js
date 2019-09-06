@@ -197,9 +197,9 @@ const actions = {
 
 function jumpLoginPage () {
   if (process.env.NODE_ENV === 'production') {
-    window.location.href = 'http://login.paascloud.net/login';
+    window.location.href = 'http://localhost:81/login';
   } else {
-    window.location.href = 'http://dev-login.paascloud.net/login';
+    window.location.href = 'http://localhost:81/login';
   }
 }
 
