@@ -4,6 +4,7 @@ import store from '../../store/';
 import {PcCookie, PcLockr, enums} from '../../util/';
 
 axios.interceptors.request.use((config) => {
+  alert('xiaolong')
   store.dispatch('get_access_token', (res) => {
     if (res) {
       config.headers.Authorization = 'Bearer ' + res;
@@ -73,7 +74,7 @@ const getters = {
 };
 
 const mutations = {
-  updateRememberMe (state) {
+  updateRememberMe(state) {
     state.rememberMe = !state.rememberMe;
     if (state.rememberMe) {
       PcCookie.set({
@@ -86,18 +87,18 @@ const mutations = {
       });
     }
   },
-  updateUserInfo (state, loginName) {
+  updateUserInfo(state, loginName) {
     state.loginName = loginName;
     PcCookie.set({
       key: enums.USER.LOGIN_NAME,
       value: loginName
     });
   },
-  updateUserMenu (state, menuList) {
+  updateUserMenu(state, menuList) {
     state.menuList = menuList;
     PcLockr.set(enums.USER.MENU_LIST, menuList);
   },
-  updateAuthToken (state, authToken) {
+  updateAuthToken(state, authToken) {
     state.authToken = authToken;
     // https://github.com/js-cookie/js-cookie/wiki/Frequently-Asked-Questions#expire-cookies-in-less-than-a-day
     let expires = 2 / 24;
@@ -126,7 +127,7 @@ const mutations = {
       expires: expires
     });
   },
-  deleteUserInfo (state) {
+  deleteUserInfo(state) {
     PcCookie.delete({
       key: enums.USER.LOGIN_NAME
     });
@@ -136,17 +137,17 @@ const mutations = {
     });
     state.rememberMe = false;
   },
-  deleteAuthToken (state) {
+  deleteAuthToken(state) {
     PcCookie.delete({
       key: enums.USER.AUTH_TOKEN
     });
     state.authToken = {};
   },
-  deleteMenuList (state) {
+  deleteMenuList(state) {
     PcLockr.delete(enums.USER.MENU_LIST);
     state.menuList = {};
   },
-  deleteRememberMe (state) {
+  deleteRememberMe(state) {
     PcLockr.delete(enums.USER.REMEMBER_ME);
     state.rememberMe = '';
   }
@@ -160,10 +161,12 @@ const actions = {
     if (state.authToken) {
       // 判断是否需要续租
       if ((new Date().getTime() - state.authToken.timestamp) > 100 * 60 * 1000) {
+        alert('step a')
         refreshToken().then(res => {
           if (res.data.code === 200) {
             commit('updateAuthToken', res.data.result);
           } else {
+            alert('step b')
             commit('deleteUserInfo');
             commit('deleteAuthToken');
             commit('deleteMenuList');
@@ -175,27 +178,27 @@ const actions = {
     }
     cb && cb(state.authToken.access_token);
   },
-  update_remember_me ({commit}) {
+  update_remember_me({commit}) {
     commit('updateRememberMe');
   },
-  update_user_info ({commit}, loginName) {
+  update_user_info({commit}, loginName) {
     commit('updateUserInfo', loginName);
   },
-  update_user_menu ({commit}, menuList) {
+  update_user_menu({commit}, menuList) {
     commit('updateUserMenu', menuList);
   },
-  delete_user_info ({commit}) {
+  delete_user_info({commit}) {
     commit('deleteUserInfo');
     commit('deleteAuthToken');
     commit('deleteMenuList');
     commit('deleteRememberMe');
   },
-  update_auth_token ({commit}, authToken) {
+  update_auth_token({commit}, authToken) {
     commit('updateAuthToken', authToken);
   }
 };
 
-function jumpLoginPage () {
+function jumpLoginPage() {
   if (process.env.NODE_ENV === 'production') {
     window.location.href = 'http://localhost:81/login';
   } else {

@@ -2,6 +2,7 @@ import axios from 'axios';
 import store from '../store/';
 const REFRESH_TOKEN_URL = '/uac/auth/user/refreshToken';
 export function refreshToken () {
+  alert('haha '+store.getters.getRefreshToken);
   return axios({
     method: 'GET',
     headers: {
@@ -17,4 +18,5 @@ export function refreshToken () {
       accessToken: store.getters.getAccessToken
     }
   });
+
 }
