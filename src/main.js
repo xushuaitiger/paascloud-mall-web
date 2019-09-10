@@ -68,26 +68,22 @@ Vue.prototype.$pcNProgress = NProgress;
 Vue.prototype.$pcEncrypt = PcEncrypt;
 
 if (process.env.NODE_ENV === 'production') {
-  Vue.prototype.$http.defaults.baseURL = 'http://api.paascloud.net/';
+  Vue.prototype.$http.defaults.baseURL = 'http://localhost/';
 }
 
 function mergeCartFlag() {
-  alert('step 11');
   let authToken = store.getters.getAuthToken;
   console.info('mall-authToken: ', authToken);
   if (authToken && authToken.access_token && !authToken.mergeCartFlag) {
     // 合并购物车数据
-	alert('step	12');
     let cartListDto = {};
     cartListDto.cartProductVoList = PcLockr.get(enums.CART.SHOPPING_CART) ? JSON.parse(PcLockr.get(enums.CART.SHOPPING_CART)) : [];
-	alert('step 13');
     axios({
       method: 'post',
-      url: '/dsjdhj',
-      data: {}
+      url: '/uac/cart/mergeUserCart',
+      data: cartListDto
     })
       .then((res) => {
-        alert('step 14');
         console.log(res);
         authToken.mergeCartFlag = true;
         store.dispatch('update_user_info', authToken.loginName);
@@ -95,11 +91,9 @@ function mergeCartFlag() {
         store.dispatch('update_auth_token', authToken);
       })
       .catch((error) => {
-		alert('step 15');
         console.log(error);
       });
   }
-  alert('step 16');
 }
 
 Vue.prototype.$http.interceptors.request.use((config) => {
@@ -127,7 +121,7 @@ Vue.prototype.$http.interceptors.response.use((res) => {
     // window.location.href = '/';
     return Promise.reject(res);
   } else {
-    // alert(res.data.message);
+    alert(res.data.message);
     return Promise.reject(res);
   }
 }, (error) => {
@@ -147,7 +141,6 @@ Vue.prototype.$http.interceptors.response.use((res) => {
 });
 
 router.beforeEach((to, from, next) => {
-  alert('step 1');
   NProgress.start();
   PcCookie.set({
     key: enums.USER.REDIRECT_URI,
@@ -155,24 +148,18 @@ router.beforeEach((to, from, next) => {
   });
   mergeCartFlag();
   if (to.meta.requestAuth) {
-    alert('step 2');
     store.dispatch('get_access_token', (res) => {
       if (res) {
-        alert('step 3');
         next();
       } else {
         if (process.env.NODE_ENV === 'production') {
-          alert('step 4');
           window.location.href = 'http://localhost:81/login';
         } else {
-          alert('step 5');
           window.location.href = 'http://localhost:81/login';
         }
       }
     });
   } else {
-    alert('step 6');
-    // return false;
     next();
   }
 });

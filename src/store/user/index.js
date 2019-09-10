@@ -110,6 +110,7 @@ const mutations = {
     delete authToken['jti'];
     delete authToken['token_type'];
     let refreshToken = {};
+    // 将authToken拷贝到 refreshToken
     Object.assign(refreshToken, authToken);
     // delete authToken['scope'];
     delete authToken['refresh_token'];
@@ -160,22 +161,22 @@ const actions = {
     }
     if (state.authToken) {
       // 判断是否需要续租
-      if ((new Date().getTime() - state.authToken.timestamp) > 100 * 60 * 1000) {
-        alert('step a')
-        refreshToken().then(res => {
-          if (res.data.code === 200) {
-            commit('updateAuthToken', res.data.result);
-          } else {
-            alert('step b')
-            commit('deleteUserInfo');
-            commit('deleteAuthToken');
-            commit('deleteMenuList');
-            commit('deleteRememberMe');
-            jumpLoginPage();
-          }
-        });
-      }
+      // if ((new Date().getTime() - state.authToken.timestamp) > 100 * 60 * 1000) {
+      alert('step a')
+      refreshToken().then(res => {
+        if (res.data.code === 200) {
+          commit('updateAuthToken', res.data.result);
+        } else {
+          alert('step b')
+          commit('deleteUserInfo');
+          commit('deleteAuthToken');
+          commit('deleteMenuList');
+          commit('deleteRememberMe');
+          jumpLoginPage();
+        }
+      });
     }
+    // }
     cb && cb(state.authToken.access_token);
   },
   update_remember_me({commit}) {
