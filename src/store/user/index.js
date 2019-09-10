@@ -4,12 +4,11 @@ import store from '../../store/';
 import {PcCookie, PcLockr, enums} from '../../util/';
 
 axios.interceptors.request.use((config) => {
-  alert('xiaolong')
-  store.dispatch('get_access_token', (res) => {
-    if (res) {
-      config.headers.Authorization = 'Bearer ' + res;
-    }
-  });
+  let access_token = store.getters.getAuthToken.access_token;
+  alert('许帅虎的凭据： ' + access_token);
+  if (access_token && access_token.length > 0) {
+    config.headers.Authorization = 'Bearer ' + access_token;
+  }
   return config;
 }, (error) => {
   return Promise.reject(error);
@@ -54,7 +53,7 @@ const getters = {
     return state.rememberMe;
   },
   getRefreshToken: (state) => {
-    if (!state.refreshToken) {
+    if ((!state.refreshToken) || state.refreshToken.refresh_token == '') {
       state.refreshToken = PcCookie.get(enums.USER.REFRESH_TOKEN) ? JSON.parse(PcCookie.get(enums.USER.REFRESH_TOKEN)) : {};
     }
     return state.refreshToken.refresh_token;
@@ -161,22 +160,20 @@ const actions = {
     }
     if (state.authToken) {
       // 判断是否需要续租
-      // if ((new Date().getTime() - state.authToken.timestamp) > 100 * 60 * 1000) {
-      alert('step a')
-      refreshToken().then(res => {
-        if (res.data.code === 200) {
-          commit('updateAuthToken', res.data.result);
-        } else {
-          alert('step b')
-          commit('deleteUserInfo');
-          commit('deleteAuthToken');
-          commit('deleteMenuList');
-          commit('deleteRememberMe');
-          jumpLoginPage();
-        }
-      });
+      if ((new Date().getTime() - state.authToken.timestamp) > 100 * 60 * 1000) {
+        refreshToken().then(res => {
+          if (res.data.code === 200) {
+            commit('updateAuthToken', res.data.result);
+          } else {
+            commit('deleteUserInfo');
+            commit('deleteAuthToken');
+            commit('deleteMenuList');
+            commit('deleteRememberMe');
+            jumpLoginPage();
+          }
+        });
+      }
     }
-    // }
     cb && cb(state.authToken.access_token);
   },
   update_remember_me({commit}) {

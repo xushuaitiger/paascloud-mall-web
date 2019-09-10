@@ -98,11 +98,9 @@ function mergeCartFlag() {
 
 Vue.prototype.$http.interceptors.request.use((config) => {
   // 在发送请求之前做点什么
-  alert('step 7');
   return config;
 }, (error) => {
   // 请求出错做点什么
-   alert('step 10');
   return Promise.reject(error);
 });
 
