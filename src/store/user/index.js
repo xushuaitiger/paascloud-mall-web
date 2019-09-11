@@ -5,7 +5,7 @@ import {PcCookie, PcLockr, enums} from '../../util/';
 
 axios.interceptors.request.use((config) => {
   let access_token = store.getters.getAuthToken.access_token;
-  alert('许帅虎的凭据： ' + access_token);
+  // alert('许帅虎的凭据： ' + access_token);
   if (access_token && access_token.length > 0) {
     config.headers.Authorization = 'Bearer ' + access_token;
   }
