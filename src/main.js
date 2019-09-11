@@ -97,10 +97,17 @@ function mergeCartFlag() {
 }
 
 Vue.prototype.$http.interceptors.request.use((config) => {
-  // 在发送请求之前做点什么
+  // 发送请求前做点什么
+  if (!config.url.indexOf('/auth') >= 0) {
+    store.dispatch('get_access_token', (res) => {
+      if (res) {
+        config.headers.Authorization = 'Bearer ' + res;
+      }
+    });
+  }
   return config;
 }, (error) => {
-  // 请求出错做点什么
+  // 请求失败后做点什么
   return Promise.reject(error);
 });
 
@@ -119,7 +126,7 @@ Vue.prototype.$http.interceptors.response.use((res) => {
     // window.location.href = '/';
     return Promise.reject(res);
   } else {
-    alert(res.data.message);
+    // alert(res.data.message);
     return Promise.reject(res);
   }
 }, (error) => {
