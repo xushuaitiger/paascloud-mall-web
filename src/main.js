@@ -59,7 +59,7 @@ const router = new VueRouter({
 });
 
 Vue.prototype.$http = axios.create({
-  timeout: 60000
+  timeout: 600000
 });
 
 Vue.prototype.$pcBus = Bus;
