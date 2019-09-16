@@ -165,7 +165,9 @@ const actions = {
       // 判断是否需要续租
       if ((new Date().getTime() - state.authToken.timestamp) > 100 * 60 * 1000) {
         refreshToken().then(res => {
-          if (res.code === 200) {
+          alert(res.data);
+          if (res.data && res.data.code && res.data.code === 200) {
+            // alert(res.data.result);
             commit('updateAuthToken', res.data.result);
           } else {
             commit('deleteUserInfo');
