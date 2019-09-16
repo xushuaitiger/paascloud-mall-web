@@ -73,7 +73,6 @@ if (process.env.NODE_ENV === 'production') {
 
 function mergeCartFlag() {
   let authToken = store.getters.getAuthToken;
-  console.info('mall-authToken: ', authToken);
   if (authToken && authToken.access_token && !authToken.mergeCartFlag) {
     // 合并购物车数据
     let cartListDto = {};
@@ -112,6 +111,7 @@ Vue.prototype.$http.interceptors.request.use((config) => {
 });
 
 Vue.prototype.$http.interceptors.response.use((res) => {
+  console.log('aaa: '+res.data);
   if (res.data.code === 200) {
     if (res.data) {
       return res.data;
@@ -145,6 +145,7 @@ Vue.prototype.$http.interceptors.response.use((res) => {
   }
 });
 
+// ~~~每次路由之前触发该函数
 router.beforeEach((to, from, next) => {
   NProgress.start();
   PcCookie.set({

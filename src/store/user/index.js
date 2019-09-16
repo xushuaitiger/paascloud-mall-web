@@ -4,10 +4,12 @@ import store from '../../store/';
 import {PcCookie, PcLockr, enums} from '../../util/';
 
 axios.interceptors.request.use((config) => {
-  let access_token = store.getters.getAuthToken.access_token;
-  // alert('许帅虎的凭据： ' + access_token);
-  if (access_token && access_token.length > 0) {
-    config.headers.Authorization = 'Bearer ' + access_token;
+  if (!config.url.indexOf('/auth') >= 0) {
+    store.dispatch('get_access_token', (res) => {
+      if (res) {
+        config.headers.Authorization = 'Bearer ' + res;
+      }
+    });
   }
   return config;
 }, (error) => {
@@ -52,17 +54,19 @@ const getters = {
     }
     return state.rememberMe;
   },
+  // ~~~ 从state获取refreshtoken
   getRefreshToken: (state) => {
     if ((!state.refreshToken) || state.refreshToken.refresh_token == '') {
       state.refreshToken = PcCookie.get(enums.USER.REFRESH_TOKEN) ? JSON.parse(PcCookie.get(enums.USER.REFRESH_TOKEN)) : {};
     }
-    return state.refreshToken.refresh_token;
+    return state.refreshToken.refresh_token ? state.refreshToken.refresh_token : '';
   },
+  // ~~~ 从state获取accesstoken
   getAccessToken: (state) => {
     if (!state.authToken) {
       state.authToken = PcCookie.get(enums.USER.AUTH_TOKEN) ? JSON.parse(PcCookie.get(enums.USER.AUTH_TOKEN)) : {};
     }
-    return state.authToken.access_token;
+    return state.authToken.access_token ? state.authToken.access_token : '';
   },
   getAuthToken: (state) => {
     if (!state.authToken || state.authToken.access_token === '') {
@@ -115,7 +119,6 @@ const mutations = {
     delete authToken['refresh_token'];
     delete refreshToken['access_token'];
     state.refreshToken = refreshToken;
-    console.info('token:', authToken);
     PcCookie.set({
       key: enums.USER.AUTH_TOKEN,
       value: authToken,
@@ -162,7 +165,7 @@ const actions = {
       // 判断是否需要续租
       if ((new Date().getTime() - state.authToken.timestamp) > 100 * 60 * 1000) {
         refreshToken().then(res => {
-          if (res.data.code === 200) {
+          if (res.code === 200) {
             commit('updateAuthToken', res.data.result);
           } else {
             commit('deleteUserInfo');
