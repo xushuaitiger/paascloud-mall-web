@@ -3,18 +3,7 @@ import axios from 'axios';
 import store from '../../store/';
 import {PcCookie, PcLockr, enums} from '../../util/';
 
-axios.interceptors.request.use((config) => {
-  if (!config.url.indexOf('/auth') >= 0) {
-    store.dispatch('get_access_token', (res) => {
-      if (res) {
-        config.headers.Authorization = 'Bearer ' + res;
-      }
-    });
-  }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+
 const state = {
   loginName: '',
   rememberMe: '',
@@ -163,11 +152,10 @@ const actions = {
     }
     if (state.authToken) {
       // 判断是否需要续租
-      if ((new Date().getTime() - state.authToken.timestamp) > 100 * 60 * 1000) {
+      if (!state.authToken.timestamp || (new Date().getTime() - state.authToken.timestamp) > 100 * 60 * 1000) {
+
         refreshToken().then(res => {
-          alert(res.data);
-          if (res.data && res.data.code && res.data.code === 200) {
-            // alert(res.data.result);
+          if (res && res.code === 200) {
             commit('updateAuthToken', res.data.result);
           } else {
             commit('deleteUserInfo');

@@ -111,7 +111,6 @@ Vue.prototype.$http.interceptors.request.use((config) => {
 });
 
 Vue.prototype.$http.interceptors.response.use((res) => {
-  console.log('aaa: '+res.data);
   if (res.data.code === 200) {
     if (res.data) {
       return res.data;
