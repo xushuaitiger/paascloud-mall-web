@@ -3,6 +3,16 @@ import axios from 'axios';
 import store from '../../store/';
 import {PcCookie, PcLockr, enums} from '../../util/';
 
+axios.interceptors.request.use((config) => {
+  store.dispatch('get_access_token', (res) => {
+    if (res) {
+      config.headers.Authorization = 'Bearer ' + res;
+    }
+  });
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
 
 const state = {
   loginName: '',
