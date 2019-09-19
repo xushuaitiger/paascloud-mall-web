@@ -55,14 +55,15 @@ const getters = {
   },
   // ~~~ 从state获取refreshtoken
   getRefreshToken: (state) => {
-    if ((!state.refreshToken) || state.refreshToken.refresh_token == '') {
+    if ((!state.refreshToken) || (!state.refreshToken.refresh_token) || state.refreshToken.refresh_token == '') {
       state.refreshToken = PcCookie.get(enums.USER.REFRESH_TOKEN) ? JSON.parse(PcCookie.get(enums.USER.REFRESH_TOKEN)) : {};
     }
     return state.refreshToken.refresh_token ? state.refreshToken.refresh_token : '';
   },
   // ~~~ 从state获取accesstoken
   getAccessToken: (state) => {
-    if (!state.authToken) {
+
+    if ((!state.authToken) || (!state.authToken.access_token) || state.authToken.access_token === '') {
       state.authToken = PcCookie.get(enums.USER.AUTH_TOKEN) ? JSON.parse(PcCookie.get(enums.USER.AUTH_TOKEN)) : {};
     }
     return state.authToken.access_token ? state.authToken.access_token : '';
@@ -163,11 +164,13 @@ const actions = {
     if (state.authToken) {
       // 判断是否需要续租
       if (!state.authToken.timestamp || (new Date().getTime() - state.authToken.timestamp) > 100 * 60 * 1000) {
-
         refreshToken().then(res => {
+          alert('gg');
           if (res && res.code === 200) {
+            alert('hh');
             commit('updateAuthToken', res.data.result);
           } else {
+            alert('ii');
             commit('deleteUserInfo');
             commit('deleteAuthToken');
             commit('deleteMenuList');

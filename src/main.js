@@ -97,7 +97,7 @@ function mergeCartFlag() {
 
 Vue.prototype.$http.interceptors.request.use((config) => {
   // 发送请求前做点什么
-  if (!config.url.indexOf('/auth') >= 0) {
+  if (config.url.indexOf('/auth') < 0) {
     store.dispatch('get_access_token', (res) => {
       if (res) {
         config.headers.Authorization = 'Bearer ' + res;
