@@ -4,12 +4,14 @@ import store from '../../store/';
 import {PcCookie, PcLockr, enums} from '../../util/';
 
 axios.interceptors.request.use((config) => {
-  store.dispatch('get_access_token', (res) => {
-    if (res) {
-      config.headers.Authorization = 'Bearer ' + res;
-    }
-  });
-  return config;
+  if (config.url.indexOf('/auth') < 0) {
+    store.dispatch('get_access_token', (res) => {
+      if (res) {
+        config.headers.Authorization = 'Bearer ' + res;
+      }
+    });
+    return config;
+  }
 }, (error) => {
   return Promise.reject(error);
 });
@@ -162,15 +164,12 @@ const actions = {
       state.authToken = PcCookie.get(enums.USER.AUTH_TOKEN) ? JSON.parse(PcCookie.get(enums.USER.AUTH_TOKEN)) : {};
     }
     if (state.authToken) {
-      // 判断是否需要续租
+      // 判断是否需要续
       if (!state.authToken.timestamp || (new Date().getTime() - state.authToken.timestamp) > 100 * 60 * 1000) {
         refreshToken().then(res => {
-          alert('gg');
           if (res && res.code === 200) {
-            alert('hh');
             commit('updateAuthToken', res.data.result);
           } else {
-            alert('ii');
             commit('deleteUserInfo');
             commit('deleteAuthToken');
             commit('deleteMenuList');
